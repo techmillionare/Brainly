@@ -1,6 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "./config";
+// import { JWT_SECRET } from "./config";
+import dotenv from "dotenv";
+dotenv.config();
+
+// Ensure JWT_SECRET is defined
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET is not defined in the environment variables");
+}
 
 interface AuthenticatedRequest extends Request {
   userId?: string;

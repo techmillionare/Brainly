@@ -3,14 +3,22 @@ import {z} from "Zod";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { ContentModel, LinkModel, UserModel } from "./db";
-import { JWT_SECRET } from "./config";
+// import { JWT_SECRET } from "./config";
 import { userMiddleware } from "./auth";
 import { Request, Response } from "express";
 import { random } from "./utils";
 import cors from "cors"
+import dotenv from "dotenv";
+dotenv.config();
 
 interface AuthenticatedRequest extends Request {
     userId?: string;
+}
+
+// Ensure JWT_SECRET is defined
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {  
+    throw new Error("JWT_SECRET is not defined in the environment variables");
 }
 
 const app = express();

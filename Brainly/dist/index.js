@@ -17,10 +17,17 @@ const Zod_1 = require("Zod");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const db_1 = require("./db");
-const config_1 = require("./config");
+// import { JWT_SECRET } from "./config";
 const auth_1 = require("./auth");
 const utils_1 = require("./utils");
 const cors_1 = __importDefault(require("cors"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+// Ensure JWT_SECRET is defined
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    throw new Error("JWT_SECRET is not defined in the environment variables");
+}
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: 'http://localhost:5173',
@@ -84,7 +91,7 @@ app.post('/api/v1/signin', (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (passwordMatched) {
             const token = jsonwebtoken_1.default.sign({
                 id: user._id
-            }, config_1.JWT_SECRET);
+            }, JWT_SECRET);
             res.status(200).json({
                 token: token,
                 message: "signed in successfully"

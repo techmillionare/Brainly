@@ -1,6 +1,19 @@
 import mongoose, { model, Schema } from "mongoose"
+import dotenv from "dotenv";
+dotenv.config();
 
-mongoose.connect("mongodb+srv://mishradayanand587:GwDg0cXlSnYqcSPF@cluster0.3pmus.mongodb.net/brainly");
+const uri = process.env.MONGODB_URL;
+
+if(!uri) {
+    throw new Error("MONGODB_URL is not defined in the environment variables");
+}
+
+mongoose.connect(uri , {
+}).then(() => {
+    console.log("Connected to MongoDB");
+}).catch((err) => {
+    console.error("MongoDB connection error:", err);
+});
 
 const UserSchema = new Schema({
     username: {type: String, unique: true,required: true},

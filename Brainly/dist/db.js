@@ -32,10 +32,23 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LinkModel = exports.ContentModel = exports.Tag = exports.UserModel = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-mongoose_1.default.connect("mongodb+srv://mishradayanand587:GwDg0cXlSnYqcSPF@cluster0.3pmus.mongodb.net/brainly");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const uri = process.env.MONGODB_URL;
+if (!uri) {
+    throw new Error("MONGODB_URL is not defined in the environment variables");
+}
+mongoose_1.default.connect(uri, {}).then(() => {
+    console.log("Connected to MongoDB");
+}).catch((err) => {
+    console.error("MongoDB connection error:", err);
+});
 const UserSchema = new mongoose_1.Schema({
     username: { type: String, unique: true, required: true },
     password: { type: String, required: true }
