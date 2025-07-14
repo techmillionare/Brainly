@@ -5,6 +5,7 @@ import axios from "axios";
 import { Backend_URL } from "../config";
 import { useNavigate } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import toast from "react-hot-toast";
 
 export const Signin = () => {
     const usernameRef = useRef<HTMLInputElement>(null);
@@ -19,6 +20,7 @@ export const Signin = () => {
         const password = passwordRef.current?.value.trim();
 
         if (!username || !password) {
+            toast.error("Please enter both username and password");
             setError("Please enter both username and password");
             return;
         }
@@ -34,10 +36,13 @@ export const Signin = () => {
             
             const jwt = response.data.token;
             localStorage.setItem("token", jwt);
+            toast.success(response.data.message);
             navigate("/dashboard");
         } catch (err: any) {
             console.error("Signin failed:", err);
-            setError(err.response?.data?.message || "Invalid credentials. Please try again.");
+            const errorMessage = err.response?.data?.message || "Invalid credentials. Please try again.";
+            toast.error(errorMessage);
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -50,7 +55,7 @@ export const Signin = () => {
     };
 
     const goToSignup = () => {
-        navigate("/signup"); // Make sure you have this route in your router
+        navigate("/signup");
     };
 
     return (

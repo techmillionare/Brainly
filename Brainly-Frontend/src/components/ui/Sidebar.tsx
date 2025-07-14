@@ -9,6 +9,7 @@ import InstagramIcon from "../../icons/InstagramIcon";
 import FacebookIcon from "../../icons/FacebookIcon";
 import { Content } from "../../pages/Dashboard";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export type ContentType = 'Youtube' | 'Twitter' | 'Notion' | 'Instagram' | 'Facebook';
 
@@ -18,7 +19,7 @@ interface SidebarProps {
   isOpen: boolean;
   onToggleOpen: (isOpen: boolean) => void;
   allContents: Content[];
-  isSharedView?: boolean; // Added this prop
+  isSharedView?: boolean;
 }
 
 export const Sidebar = ({ 
@@ -27,7 +28,7 @@ export const Sidebar = ({
   isOpen,
   onToggleOpen,
   allContents,
-  isSharedView = false // Default to false
+  isSharedView = false
 }: SidebarProps) => {
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -40,21 +41,44 @@ export const Sidebar = ({
   const handleFilterClick = (type: ContentType | null) => {
     onFilterChange(type);
     onToggleOpen(false);
+    toast.success(`Filtered by ${type || 'All Content'}`, {
+      icon: type ? '🔍' : '📄',
+      duration: 1500
+    });
   };
 
   const handleLogout = () => {
     setIsLoggingOut(true);
-    localStorage.removeItem("token");
-    navigate("/signin");
+    toast.promise(
+      new Promise((resolve) => {
+        setTimeout(() => {
+          localStorage.removeItem("token");
+          resolve("Success");
+        }, 500);
+      }),
+      {
+        loading: 'Logging out...',
+        success: 'Logged out successfully!',
+        error: 'Error during logout',
+      }
+    ).then(() => {
+      navigate("/signin");
+    });
   };
 
   return (
     <>
       {/* Mobile menu button */}
-      {!isSharedView && ( // Only show mobile menu button in non-shared view
+      {!isSharedView && (
         <button
           className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow-md"
-          onClick={() => onToggleOpen(!isOpen)}
+          onClick={() => {
+            onToggleOpen(!isOpen);
+            toast(!isOpen ? 'Opening menu' : 'Closing menu', {
+              icon: !isOpen ? '☰' : '✕',
+              duration: 1000
+            });
+          }}
         >
           {isOpen ? (
             <XMarkIcon className="h-6 w-6" />
@@ -113,7 +137,6 @@ export const Sidebar = ({
           </div>
         </div>
 
-        {/* Only show logout button in non-shared view */}
         {!isSharedView && (
           <div className="p-4 border-t">
             <button
@@ -121,7 +144,7 @@ export const Sidebar = ({
               disabled={isLoggingOut}
               className={`
                 w-full py-2 px-4 rounded-md 
-                text-red-600 bg-red-50  hover:bg-red-100 
+                text-red-600 bg-red-50 hover:bg-red-100 
                 transition-colors duration-200
                 font-medium
                 ${isLoggingOut ? 'opacity-50 cursor-not-allowed' : ''}
@@ -134,7 +157,7 @@ export const Sidebar = ({
       </div>
 
       {/* Overlay for mobile */}
-      {isOpen && !isSharedView && ( // Only show overlay in non-shared view
+      {isOpen && !isSharedView && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
           onClick={() => onToggleOpen(false)}

@@ -9,6 +9,7 @@ import { Backend_URL } from "../config";
 import axios from "axios";
 import { ContentType } from "../components/ui/Sidebar";
 import { useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export interface Content {
   _id: string;
@@ -27,22 +28,21 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeFilter, setActiveFilter] = useState<ContentType | null>(null);
-  const { shareHash } = useParams(); // Get share hash from URL if exists
-
-  const isSharedView = !!shareHash; // Determine if this is a shared view
+  const { shareHash } = useParams();
+  const isSharedView = !!shareHash;
 
   const fetchContents = async () => {
     try {
       setLoading(true);
+      toast.loading("Loading contents...", { id: "content-loading" });
       
       if (isSharedView) {
-        // Fetch shared content
         const response = await axios.get(`${Backend_URL}/api/v1/brain/${shareHash}`);
         const sharedContents = response.data?.content || [];
         setAllContents(sharedContents);
         applyFilter(activeFilter, sharedContents);
+        toast.success(`Loaded ${sharedContents.length} shared items`, { id: "content-loading" });
       } else {
-        // Fetch user's own content
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No authentication token found");
 
@@ -53,9 +53,12 @@ export function Dashboard() {
         const newContents = response.data?.content || [];
         setAllContents(newContents);
         applyFilter(activeFilter, newContents);
+        toast.success(`Loaded ${newContents.length} items`, { id: "content-loading" });
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Failed to load contents");
+      const errorMsg = err.response?.data?.message || err.message || "Failed to load contents";
+      setError(errorMsg);
+      toast.error(errorMsg, { id: "content-loading" });
     } finally {
       setLoading(false);
     }
@@ -75,7 +78,7 @@ export function Dashboard() {
   };
 
   const handleDeleteContent = async (contentId: string) => {
-    if (isSharedView) return; // Disable delete in shared view
+    if (isSharedView) return;
     
     try {
       const token = localStorage.getItem("token");
@@ -89,19 +92,23 @@ export function Dashboard() {
       const updatedContents = allContents.filter(content => content._id !== contentId);
       setAllContents(updatedContents);
       applyFilter(activeFilter, updatedContents);
+      toast.success("Content deleted successfully");
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Failed to delete content");
+      const errorMsg = err.response?.data?.message || err.message || "Failed to delete content";
+      setError(errorMsg);
+      toast.error(errorMsg);
     }
   };
 
   const handleContentAdded = () => {
-    fetchContents(); // Refresh content when new content is added
+    toast.success("Content added successfully");
+    fetchContents();
     setModal(false);
   };
 
   useEffect(() => {  
     fetchContents();
-  }, [shareHash]); // Refetch when shareHash changes
+  }, [shareHash]);
 
   if (loading) return <div className="p-4">Loading...</div>;
   if (error) return <div className="p-4 text-red-500">{error}</div>;
@@ -111,7 +118,7 @@ export function Dashboard() {
       activeFilter={activeFilter} 
       onFilterChange={handleFilterChange}
       allContents={allContents}
-      isSharedView={isSharedView} // Pass to Layout
+      isSharedView={isSharedView}
     >
       {!isSharedView && (
         <CreateContentModal 
@@ -140,14 +147,22 @@ export function Dashboard() {
               <Button
                 onClick={async () => {
                   try {
-                    const response = await axios.post(`${Backend_URL}/api/v1/brain/share`, {
-                      share: true
-                    }, {
-                      headers: { "authorization": localStorage.getItem("token") || "" } 
-                    });
-                    navigator.clipboard.writeText(`${window.location.origin}/share/${response.data.hash}`);
-                    alert("Link copied to clipboard!");
-                  } catch (err) {
+                    const token = localStorage.getItem("token");
+                    if (!token) throw new Error("Not authenticated");
+                    
+                    toast.loading("Generating share link...", { id: "share-link" });
+                    const response = await axios.post(
+                      `${Backend_URL}/api/v1/brain/share`,
+                      { share: true },
+                      { headers: { "authorization": token } }
+                    );
+                    
+                    const shareUrl = `${window.location.origin}/share/${response.data.hash}`;
+                    await navigator.clipboard.writeText(shareUrl);
+                    toast.success("Share link copied to clipboard!", { id: "share-link" });
+                  } catch (err: any) {
+                    const errorMsg = err.response?.data?.message || err.message || "Failed to generate share link";
+                    toast.error(errorMsg, { id: "share-link" });
                     console.error("Sharing failed:", err);
                   }
                 }} 
