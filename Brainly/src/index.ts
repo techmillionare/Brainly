@@ -22,10 +22,12 @@ if (!JWT_SECRET) {
 }
 
 const app = express();
-app.use(cors({
-  origin: ['http://localhost:5173',"https://second-brain-gilt-iota.vercel.app/"], // replace with your frontend URL
-//   credentials: true // if you use cookies or sessions
-}));
+// app.use(cors({
+//   origin: ['http://localhost:5173',"https://second-brain-gilt-iota.vercel.app/"], // replace with your frontend URL
+// //   credentials: true // if you use cookies or sessions
+// }));
+app.use(cors());
+
 app.use(express.json());
 
 app.post('/api/v1/signup',async (req,res) => {
