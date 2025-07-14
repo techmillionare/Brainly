@@ -30,7 +30,7 @@ if (!JWT_SECRET) {
 }
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', "https://second-brain-gilt-iota.vercel.app/"], // replace with your frontend URL
     //   credentials: true // if you use cookies or sessions
 }));
 app.use(express_1.default.json());
