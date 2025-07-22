@@ -29,10 +29,11 @@ if (!JWT_SECRET) {
     throw new Error("JWT_SECRET is not defined in the environment variables");
 }
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)({
-    origin: ['http://localhost:5173', "https://second-brain-gilt-iota.vercel.app/"], // replace with your frontend URL
-    //   credentials: true // if you use cookies or sessions
-}));
+// app.use(cors({
+//   origin: ['http://localhost:5173',"https://second-brain-gilt-iota.vercel.app/"], // replace with your frontend URL
+// //   credentials: true // if you use cookies or sessions
+// }));
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.post('/api/v1/signup', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
