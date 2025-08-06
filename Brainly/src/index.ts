@@ -1,5 +1,5 @@
 import  express from "express";
-import {z} from "Zod";
+import {z} from "zod";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { ContentModel, LinkModel, UserModel } from "./db";

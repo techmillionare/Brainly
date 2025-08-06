@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const Zod_1 = require("Zod");
+const zod_1 = require("zod");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const db_1 = require("./db");
@@ -37,9 +37,9 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.post('/api/v1/signup', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const bodyRequired = Zod_1.z.object({
-            username: Zod_1.z.string().min(3).max(15),
-            password: Zod_1.z
+        const bodyRequired = zod_1.z.object({
+            username: zod_1.z.string().min(3).max(15),
+            password: zod_1.z
                 .string()
                 .min(8, 'The password must be at least 8 characters long')
                 .max(32, 'The password must be a maximun 32 characters')
