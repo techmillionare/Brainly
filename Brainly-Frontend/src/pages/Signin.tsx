@@ -2,10 +2,12 @@ import { useRef, useState } from "react";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import axios from "axios";
-import { Backend_URL } from "../config";
+// import { Backend_URL } from "../config";
 import { useNavigate } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
+
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 export const Signin = () => {
     const usernameRef = useRef<HTMLInputElement>(null);
@@ -29,7 +31,7 @@ export const Signin = () => {
         setError("");
 
         try {
-            const response = await axios.post(`${Backend_URL}/api/v1/signin`, {
+            const response = await axios.post(`/api/v1/signin`, {
                 username,
                 password
             });

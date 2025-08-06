@@ -5,11 +5,13 @@ import { CreateContentModal } from "../components/ui/CreateContentModal";
 import { PlusIcon } from "../icons/PlusIcon";
 import { ShareIcon } from "../icons/ShareIcon";
 import { Layout } from "../components/ui/Layout";
-import { Backend_URL } from "../config";
+// import { Backend_URL } from "../config";
 import axios from "axios";
 import { ContentType } from "../components/ui/Sidebar";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 export interface Content {
   _id: string;
@@ -37,7 +39,7 @@ export function Dashboard() {
       toast.loading("Loading contents...", { id: "content-loading" });
       
       if (isSharedView) {
-        const response = await axios.get(`${Backend_URL}/api/v1/brain/${shareHash}`);
+        const response = await axios.get(`/api/v1/brain/${shareHash}`);
         const sharedContents = response.data?.content || [];
         setAllContents(sharedContents);
         applyFilter(activeFilter, sharedContents);
@@ -46,7 +48,7 @@ export function Dashboard() {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No authentication token found");
 
-        const response = await axios.get(`${Backend_URL}/api/v1/content`, {
+        const response = await axios.get(`/api/v1/content`, {
           headers: { "authorization": token }
         });
 
@@ -84,7 +86,7 @@ export function Dashboard() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No authentication token found");
 
-      await axios.delete(`${Backend_URL}/api/v1/delete`, {
+      await axios.delete(`/api/v1/delete`, {
         data: { contentId },
         headers: { "authorization": token }
       });
@@ -152,7 +154,7 @@ export function Dashboard() {
                     
                     toast.loading("Generating share link...", { id: "share-link" });
                     const response = await axios.post(
-                      `${Backend_URL}/api/v1/brain/share`,
+                      `/api/v1/brain/share`,
                       { share: true },
                       { headers: { "authorization": token } }
                     );

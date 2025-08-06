@@ -3,7 +3,8 @@ import { CrossIcon } from "../../icons/CrossICon";
 import { Button } from "./Button";
 import { Input } from "./Input";
 import axios from "axios";
-import { Backend_URL } from "../../config";
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
+// import { Backend_URL } from "../../config";
 
 interface ModalProps {
   open: boolean;
@@ -44,7 +45,7 @@ export const CreateContentModal = ({ open, onClose, onContentAdded }: ModalProps
         throw new Error("Authentication token not found");
       }
 
-      await axios.post(`${Backend_URL}/api/v1/content`, {
+      await axios.post(`/api/v1/content`, {
         link,
         title,
         type,

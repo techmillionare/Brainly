@@ -3,8 +3,10 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Card } from "../components/ui/Card";
 import { Layout } from "../components/ui/Layout";
-import { Backend_URL } from "../config";
+// import { Backend_URL } from "../config";
 import { ContentType } from "../components/ui/Sidebar";
+
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 export interface Content {
   _id: string;
@@ -31,7 +33,7 @@ export default function SharedBrainView() {
     const fetchData = async () => {
       try {
         const response = await axios.get<SharedBrainResponse>(
-          `${Backend_URL}/api/v1/brain/${shareLink}`
+          `/api/v1/brain/${shareLink}`
         );
         setData(response.data);
       } catch (err) {
