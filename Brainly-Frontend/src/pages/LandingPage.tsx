@@ -97,12 +97,20 @@ export const LandingPage = () => {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <button
-              onClick={() => navigate("/signin")}
-              className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 md:py-4 md:text-lg md:px-10 transition-all duration-200 transform hover:scale-105 flex items-center"
-            >
-              Access Your Brain
-              <ArrowRightIcon className="h-5 w-5 ml-2 inline" />
+                onClick={() => {
+                  const token = localStorage.getItem("token");
+                  if (token) {
+                    navigate("/dashboard");
+                  } else {
+                    navigate("/signin");
+                  }
+                }}
+                className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 md:py-4 md:text-lg md:px-10 transition-all duration-200 transform hover:scale-105 flex items-center"
+              >
+                Access Your Brain
+                <ArrowRightIcon className="h-5 w-5 ml-2 inline" />
             </button>
+
             <button
               onClick={() => navigate("/signup")}
               className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-purple-700 bg-purple-100 hover:bg-purple-200 md:py-4 md:text-lg md:px-10 transition-all duration-200"
